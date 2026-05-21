@@ -9,5 +9,6 @@ mysqli_query($conn,
 WHERE id_user='$id'");
 
 header("Location: index.php");
+exit;
 
 ?>

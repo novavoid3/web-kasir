@@ -1,22 +1,60 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3">
-    <a class="navbar-brand fw-bold" href="#">
-        KasirApp
-    </a>
+<nav class="navbar navbar-expand-lg bg-white shadow-sm px-4 py-3 rounded">
 
-    <div class="ms-auto d-flex align-items-center gap-3">
+<div class="container-fluid">
 
-        <button class="btn btn-outline-light btn-sm" id="toggleMode">
-            <i class="fa-solid fa-moon"></i>
-        </button>
+<button class="btn btn-dark d-lg-none"
+id="toggleSidebar">
 
-        <span class="text-white">
-            <?= $_SESSION['nama']; ?>
-        </span>
+<i class="fa fa-bars"></i>
 
-        <a href="../../auth/logout.php"
-        class="btn btn-danger btn-sm">
-            Logout
-        </a>
+</button>
 
-    </div>
+<h5 class="mb-0 fw-bold">
+Web Kasir
+</h5>
+
+<div class="d-flex align-items-center gap-3">
+
+<button class="btn btn-outline-dark"
+id="darkModeToggle">
+
+<i class="fa fa-moon"></i>
+
+</button>
+
+<div class="dropdown">
+
+<button class="btn btn-light dropdown-toggle"
+data-bs-toggle="dropdown">
+
+<?= $_SESSION['nama']; ?>
+
+</button>
+
+<ul class="dropdown-menu dropdown-menu-end">
+
+<li>
+<a class="dropdown-item"
+href="/web-kasir/pages/profile.php">
+
+Profile
+</a>
+</li>
+
+<li>
+<a class="dropdown-item text-danger"
+href="/web-kasir/auth/logout.php">
+
+Logout
+</a>
+</li>
+
+</ul>
+
+</div>
+
+</div>
+
+</div>
+
 </nav>

@@ -9,5 +9,6 @@ mysqli_query($conn,
 WHERE id_supplier='$id'");
 
 header("Location: index.php");
+exit;
 
 ?>
