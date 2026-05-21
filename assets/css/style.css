@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+body{
+    font-family: 'Inter', sans-serif;
+}
+
+.card{
+    border:none;
+    border-radius:16px;
+}
+
+.table{
+    border-radius:12px;
+    overflow:hidden;
+}
+
+.dark-mode{
+    background:#121212 !important;
+    color:white !important;
+}
+
+.dark-mode .card{
+    background:#1f1f1f;
+    color:white;
+}
+
+.dark-mode .table{
+    color:white;
+}
