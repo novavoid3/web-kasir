@@ -3,13 +3,17 @@
 include '../../config/koneksi.php';
 include '../../includes/header.php';
 
+/*
+Ambil data transaksi
+*/
+
 $query = mysqli_query($conn,
 "SELECT transaksi.*,
 users.nama
 FROM transaksi
 LEFT JOIN users
-ON transaksi.id_user=users.id_user
-ORDER BY id_transaksi DESC");
+ON transaksi.id_user = users.id_user
+ORDER BY transaksi.id_transaksi DESC");
 
 ?>
 
@@ -32,7 +36,7 @@ justify-content-between
 align-items-center
 mb-4">
 
-<h4 class="fw-bold">
+<h4 class="fw-bold mb-0">
 Riwayat Transaksi
 </h4>
 
@@ -55,11 +59,25 @@ id="datatable">
 
 <tr>
 
-<th>No</th>
-<th>Tanggal</th>
-<th>Kasir</th>
-<th>Total</th>
-<th>Aksi</th>
+<th width="5%">
+No
+</th>
+
+<th>
+Tanggal
+</th>
+
+<th>
+Kasir
+</th>
+
+<th>
+Total
+</th>
+
+<th width="25%">
+Aksi
+</th>
 
 </tr>
 
@@ -71,19 +89,28 @@ id="datatable">
 
 $no = 1;
 
-while($data=mysqli_fetch_assoc($query)){
+while($data = mysqli_fetch_assoc($query)){
 
 ?>
 
 <tr>
 
-<td><?= $no++; ?></td>
-
-<td><?= $data['tanggal']; ?></td>
-
-<td><?= $data['nama']; ?></td>
+<td>
+<?= $no++; ?>
+</td>
 
 <td>
+<?= date(
+'d M Y H:i',
+strtotime($data['tanggal'])
+); ?>
+</td>
+
+<td>
+<?= htmlspecialchars($data['nama']); ?>
+</td>
+
+<td class="fw-semibold text-success">
 
 Rp
 <?= number_format(
@@ -96,6 +123,8 @@ $data['total'],
 </td>
 
 <td>
+
+<div class="d-flex gap-2 flex-wrap">
 
 <a href="detail.php?id=<?= $data['id_transaksi']; ?>"
 class="btn btn-info btn-sm rounded-3">
@@ -110,6 +139,16 @@ class="btn btn-dark btn-sm rounded-3">
 <i class="fa fa-print"></i>
 
 </a>
+
+<a href="hapus.php?id=<?= $data['id_transaksi']; ?>"
+class="btn btn-danger btn-sm rounded-3"
+onclick="return confirm('Yakin ingin menghapus transaksi ini?')">
+
+<i class="fa fa-trash"></i>
+
+</a>
+
+</div>
 
 </td>
 
