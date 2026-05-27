@@ -1,13 +1,15 @@
 .dark-mode{
-background:#121212 !important;
-color:white !important;
+    background:#0f172a !important;
+    color:white;
 }
 
-.dark-mode .card{
-background:#1f1f1f;
-color:white;
+.dark-mode .navbar-custom,
+.dark-mode .stat-card,
+.dark-mode .chart-card{
+    background:#1e293b;
+    color:white;
 }
 
-.dark-mode .table{
-color:white;
+.dark-mode .stat-title{
+    color:#cbd5e1;
 }

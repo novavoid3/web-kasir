@@ -1,136 +1,716 @@
 <?php
-
 include '../../config/koneksi.php';
-include '../../includes/header.php';
-
-$query = mysqli_query($conn,
-"SELECT * FROM supplier
-ORDER BY id_supplier DESC");
-
+$pageTitle = "Data Supplier";
 ?>
+
+<?php include '../../includes/header.php'; ?>
 
 <div class="d-flex">
+    <!-- SIDEBAR -->
+    <?php include '../../includes/sidebar.php'; ?>
 
-<?php include '../../includes/sidebar.php'; ?>
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <?php include '../../includes/navbar.php'; ?>
 
-<div class="container-fluid p-4">
+        <?php
+        $total_supplier = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM supplier"));
+        ?>
 
-<?php include '../../includes/navbar.php'; ?>
+        <!-- STATS CARDS -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-12">
+                <div class="stat-card card-purple">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="stat-title">Total Supplier</p>
+                            <h2 class="stat-number"><?= $total_supplier; ?></h2>
+                            <p class="stat-subtitle"><i class="fa fa-truck"></i> Semua Supplier Terdaftar</p>
+                        </div>
+                        <div class="icon-stat icon-purple">
+                            <i class="fa fa-truck fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<div class="card shadow-sm p-4 mt-4">
+        <!-- TABLE CARD -->
+        <div class="table-card">
+            
+            <!-- Header -->
+            <div class="table-header">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div>
+                        <h4 class="table-title">Data Supplier</h4>
+                        <p class="table-subtitle">Kelola semua data supplier</p>
+                    </div>
+                    <div class="d-flex gap-3 align-items-center">
+                        <!-- Search Box -->
+                        <div class="search-box">
+                            <div class="search-icon"><i class="fa fa-search"></i></div>
+                            <input type="text" placeholder="Cari supplier..." class="search-input">
+                        </div>
+                        
+                        <!-- Tombol Tambah HD -->
+                        <a href="tambah.php" class="btn-tambah-hd">
+                            <span class="btn-icon"><i class="fa fa-plus"></i></span>
+                            <span class="btn-text">Tambah</span>
+                            <span class="btn-shine"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
+            <!-- Table -->
+            <div class="table-wrapper">
+                <table class="table-custom" id="datatable">
+                    <thead>
+                        <tr>
+                            <th width="60">No</th>
+                            <th>Info Supplier</th>
+                            <th>Telepon</th>
+                            <th>Alamat</th>
+                            <th width="180">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $no = 1;
+                        $query = mysqli_query($conn, "SELECT * FROM supplier ORDER BY id_supplier DESC");
+                        while($data = mysqli_fetch_assoc($query)){
+                        ?>
+                        <tr>
+                            <td class="text-center">
+                                <span class="nomor"><?= $no++; ?></span>
+                            </td>
+                            <td>
+                                <div class="supplier-info">
+                                    <div class="icon-supplier">
+                                        <i class="fa fa-truck"></i>
+                                    </div>
+                                    <div class="supplier-detail">
+                                        <span class="supplier-name"><?= htmlspecialchars($data['nama_supplier']); ?></span>
+                                        <span class="supplier-id">#<?= str_pad($data['id_supplier'], 4, '0', STR_PAD_LEFT); ?></span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <a href="tel:<?= $data['telepon']; ?>" class="contact-link">
+                                    <i class="fa fa-phone"></i>
+                                    <?= htmlspecialchars($data['telepon']); ?>
+                                </a>
+                            </td>
+                            <td class="alamat-cell"><?= htmlspecialchars($data['alamat']); ?></td>
+                            <td>
+                                <div class="btn-action-group">
+                                    <!-- Edit HD -->
+                                    <a href="edit.php?id=<?= $data['id_supplier']; ?>" 
+                                       class="btn-edit-hd" 
+                                       title="Edit">
+                                        <span class="btn-edit-icon"><i class="fa fa-pen"></i></span>
+                                        <span class="btn-edit-text">Edit</span>
+                                    </a>
+                                    
+                                    <!-- Hapus HD -->
+                                    <a href="hapus.php?id=<?= $data['id_supplier']; ?>" 
+                                       class="btn-delete-hd" 
+                                       title="Hapus"
+                                       onclick="return confirm('Yakin hapus supplier ini?')">
+                                        <span class="btn-delete-icon"><i class="fa fa-trash"></i></span>
+                                        <span class="btn-delete-text">Hapus</span>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php } ?>
+                        
+                        <?php if(mysqli_num_rows($query) == 0){ ?>
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <div class="empty-state">
+                                    <i class="fa fa-truck-loading"></i>
+                                    <p>Belum ada supplier</p>
+                                    <a href="tambah.php" class="btn-tambah-sm">
+                                        <i class="fa fa-plus"></i> Tambah Sekarang
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
 
-<h4 class="fw-bold">
-Data Supplier
-</h4>
+        </div>
 
-<a href="tambah.php"
-class="btn btn-success">
-
-<i class="fa fa-plus"></i>
-Tambah Supplier
-
-</a>
+    </div>
 
 </div>
 
-<div class="table-responsive">
+<!-- CUSTOM STYLES + TOMBOL HD + DARK MODE -->
+<style>
+/* ============================== BASE STYLES ============================== */
 
-<table class="table table-hover align-middle"
-id="datatable">
+.stat-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
 
-<thead class="table-dark">
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, #8b5cf6, #c084fc);
+}
 
-<tr>
+.stat-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
 
-<th width="5%">
-No
-</th>
+.stat-title {
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
 
-<th>
-Nama Supplier
-</th>
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 5px 0;
+}
 
-<th>
-Telepon
-</th>
+.stat-subtitle {
+    font-size: 12px;
+    color: #94a3b8;
+    margin: 0;
+}
 
-<th>
-Alamat
-</th>
+.stat-subtitle i { margin-right: 5px; }
 
-<th width="20%">
-Aksi
-</th>
+.icon-stat {
+    width: 65px;
+    height: 65px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-</tr>
+.icon-purple { 
+    background: linear-gradient(135deg, #f3e8ff, #ede9fe); 
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+}
+.icon-purple i { color: #8b5cf6; }
 
-</thead>
+/* Table Card */
+.table-card {
+    background: #fff;
+    border-radius: 28px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
 
-<tbody>
+.table-header {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f1f5f9;
+}
 
-<?php
+.table-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+}
 
-$no = 1;
+.table-subtitle {
+    color: #94a3b8;
+    font-size: 14px;
+}
 
-while($data = mysqli_fetch_assoc($query)){
+/* Search Box */
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8fafc;
+    padding: 8px 16px;
+    border-radius: 14px;
+    border: 2px solid transparent;
+    transition: 0.3s;
+}
 
-?>
+.search-box:focus-within {
+    border-color: #8b5cf6;
+    background: #fff;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.15);
+}
 
-<tr>
+.search-icon i { color: #94a3b8; font-size: 14px; }
 
-<td>
-<?= $no++; ?>
-</td>
+.search-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 14px;
+    color: #1e293b;
+    width: 140px;
+}
 
-<td>
-<?= htmlspecialchars($data['nama_supplier']); ?>
-</td>
+.search-input::placeholder { color: #94a3b8; }
 
-<td>
-<?= htmlspecialchars($data['telepon']); ?>
-</td>
+/* ============================== TOMBOL TAMBAH HD ============================== */
 
-<td>
-<?= htmlspecialchars($data['alamat']); ?>
-</td>
+.btn-tambah-hd {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #ba75ff 0%, #a51eff 50%, #8000ffe0 100%);
+    color: #fff;
+    border-radius: 16px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 
+       0 4px 15px rgb(161, 92, 213),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(154, 73, 205, 0.76);
+}
 
-<td>
+.btn-tambah-hd .btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    font-size: 12px;
+}
 
-<a href="edit.php?id=<?= $data['id_supplier']; ?>"
-class="btn btn-warning btn-sm">
+.btn-tambah-hd .btn-shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s ease;
+}
 
-<i class="fa fa-edit"></i>
-Edit
+.btn-tambah-hd:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+    color: #fff;
+}
 
-</a>
+.btn-tambah-hd:hover .btn-shine {
+    left: 100%;
+}
 
-<a href="hapus.php?id=<?= $data['id_supplier']; ?>"
-class="btn btn-danger btn-sm"
-onclick="return confirm('Yakin hapus supplier ini?')">
+/* Table Wrapper */
+.table-wrapper {
+    border-radius: 16px;
+    overflow: hidden;
+    background: #f8fafc;
+}
 
-<i class="fa fa-trash"></i>
-Hapus
+.table-custom {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
 
-</a>
+.table-custom thead {
+    background: #f1f5f9;
+}
 
-</td>
+.table-custom th {
+    padding: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: none;
+}
 
-</tr>
+.table-custom td {
+    padding: 18px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+    font-size: 14px;
+    vertical-align: middle;
+}
 
-<?php } ?>
+.table-custom tbody tr:hover {
+    background: #fafafb;
+}
 
-</tbody>
+.nomor {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #f1f5f9;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+}
 
-</table>
+.supplier-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
-</div>
+.icon-supplier {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3b82f6;
+    font-size: 18px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
 
-</div>
+.supplier-detail {
+    display: flex;
+    flex-direction: column;
+}
 
-</div>
+.supplier-name {
+    font-weight: 600;
+    color: #1e293b;
+}
 
-</div>
+.supplier-id {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.contact-link:hover {
+    color: #1d4ed8;
+}
+
+.alamat-cell {
+    max-width: 250px;
+    color: #64748b;
+}
+
+/* ============================== TOMBOL EDIT HD ============================== */
+
+.btn-action-group {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-edit-hd {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #b45309;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 4px 12px rgba(251, 191, 36, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.btn-edit-hd .btn-edit-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: rgba(180, 83, 9, 0.15);
+    border-radius: 6px;
+    font-size: 11px;
+    transition: all 0.3s ease;
+}
+
+.btn-edit-hd:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(251, 191, 36, 0.35);
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #fff;
+}
+
+.btn-edit-hd:hover .btn-edit-icon {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* ============================== TOMBOL HAPUS HD ============================== */
+
+.btn-delete-hd {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #dc2626;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 4px 12px rgba(239, 68, 68, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.btn-delete-hd .btn-delete-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: rgba(220, 38, 38, 0.15);
+    border-radius: 6px;
+    font-size: 11px;
+    transition: all 0.3s ease;
+}
+
+.btn-delete-hd:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.35);
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #fff;
+}
+
+.btn-delete-hd:hover .btn-delete-icon {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: #94a3b8;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.btn-tambah-sm {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #f1f5f9;
+    color: #475569;
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.btn-tambah-sm:hover {
+    background: #8b
+    cf6;
+    color: #fff;
+}
+
+/* ============================== DARK MODE ============================== */
+
+body.dark-mode .main-content {
+    background: #0f172a;
+}
+
+body.dark-mode .stat-card {
+    background: #1e293b;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+body.dark-mode .stat-number {
+    color: #f1f5f9;
+}
+
+body.dark-mode .stat-title {
+    color: #94a3b8;
+}
+
+body.dark-mode .stat-subtitle {
+    color: #64748b;
+}
+
+body.dark-mode .table-card {
+    background: #1e293b;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+body.dark-mode .table-header {
+    border-bottom-color: #334155;
+}
+
+body.dark-mode .table-title {
+    color: #f1f5f9;
+}
+
+body.dark-mode .table-subtitle {
+    color: #94a3b8;
+}
+
+body.dark-mode .search-box {
+    background: #334155;
+}
+
+body.dark-mode .search-input {
+    color: #e2e8f0;
+}
+
+body.dark-mode .search-input::placeholder {
+    color: #94a3b8;
+}
+
+body.dark-mode .table-wrapper {
+    background: #334155;
+}
+
+body.dark-mode .table-custom thead {
+    background: #475569;
+}
+
+body.dark-mode .table-custom th {
+    color: #cbd5e1;
+}
+
+body.dark-mode .table-custom td {
+    color: #e2e8f0;
+    border-color: #475569;
+}
+
+body.dark-mode .table-custom tbody tr:hover {
+    background: #475569;
+}
+
+body.dark-mode .nomor {
+    background: #475569;
+    color: #cbd5e1;
+}
+
+body.dark-mode .icon-supplier {
+    background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
+    color: #93c5fd;
+}
+
+body.dark-mode .supplier-name {
+    color: #f1f5f9;
+}
+
+body.dark-mode .contact-link {
+    color: #60a5fa;
+}
+
+body.dark-mode .alamat-cell {
+    color: #94a3b8;
+}
+
+body.dark-mode .btn-edit-hd {
+    background: linear-gradient(135deg, #451a03 0%, #78350f 100%);
+    color: #fcd34d;
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.15);
+}
+
+body.dark-mode .btn-edit-hd:hover {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #fff;
+}
+
+body.dark-mode .btn-delete-hd {
+    background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%);
+    color: #fca5a5;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+}
+
+body.dark-mode .btn-delete-hd:hover {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #fff;
+}
+
+body.dark-mode .empty-state {
+    color: #64748b;
+}
+
+body.dark-mode .btn-tambah-sm {
+    background: #475569;
+    color: #cbd5e1;
+}
+
+body.dark-mode .btn-tambah-sm:hover {
+    background: #8b5cf6;
+    color: #fff;
+}
+
+/* Responsive */
+@media(max-width: 768px){
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 90px 15px 15px;
+    }
+    .table-card {
+        padding: 20px;
+    }
+    .btn-tambah-hd {
+        padding: 10px 16px;
+    }
+    .btn-tambah-hd .btn-text {
+        display: none;
+    }
+    .btn-edit-text, .btn-delete-text {
+        display: none;
+    }
+    .btn-edit-hd, .btn-delete-hd {
+        padding: 10px 12px;
+    }
+}
+</style>
 
 <?php include '../../includes/footer.php'; ?>

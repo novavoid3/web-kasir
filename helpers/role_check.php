@@ -1,13 +1,9 @@
 <?php
+function checkRole($roles=[]){
 
-function role($role){
-
-if($_SESSION['role'] != $role){
-
-die('Akses ditolak');
-
+if(!in_array($_SESSION['role'],$roles)){
+    echo "<script>alert('Akses ditolak');window.location='/web-kasir/pages/home.php';</script>";
+    exit;
 }
-
 }
-
 ?>

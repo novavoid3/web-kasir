@@ -1,92 +1,346 @@
 <?php
-
 session_start();
-
 include '../../config/koneksi.php';
-include '../../includes/header.php';
-
-$query = mysqli_query($conn,
-"SELECT * FROM kategori
-ORDER BY id_kategori DESC");
-
+$pageTitle = "Data Kategori";
 ?>
+
+<?php include '../../includes/header.php'; ?>
 
 <div class="d-flex">
+    <?php include '../../includes/sidebar.php'; ?>
 
-<?php include '../../includes/sidebar.php'; ?>
+    <div class="main-content">
+        <?php include '../../includes/navbar.php'; ?>
 
-<div class="container-fluid p-4">
+        <?php
+        $total_kategori = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM kategori"));
+        ?>
 
-<?php include '../../includes/navbar.php'; ?>
+        <!-- STATS -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-12">
+                <div class="stat-card card-purple">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="stat-title">Total Kategori</p>
+                            <h2 class="stat-number"><?= $total_kategori; ?></h2>
+                            <p class="stat-subtitle"><i class="fa fa-tags"></i> Semua Kategori Produk</p>
+                        </div>
+                        <div class="icon-stat icon-purple">
+                            <i class="fa fa-tags fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<div class="card shadow-sm p-4 mt-4">
+        <!-- TABLE CARD -->
+        <div class="table-card">
+            <div class="table-header">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div>
+                        <h4 class="table-title">Data Kategori</h4>
+                        <p class="table-subtitle">Kelola kategori produk kasirmu</p>
+                    </div>
+                    <div class="d-flex gap-3 align-items-center">
+                        <div class="search-box">
+                            <div class="search-icon"><i class="fa fa-search"></i></div>
+                            <input type="text" placeholder="Cari kategori..." class="search-input">
+                        </div>
+                        <a href="tambah.php" class="btn-tambah-hd">
+                            <span class="btn-icon"><i class="fa fa-plus"></i></span>
+                            <span class="btn-text">Tambah</span>
+                            <span class="btn-shine"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
 
-<div class="d-flex justify-content-between mb-3">
-
-<h4>Data Kategori</h4>
-
-<a href="tambah.php"
-class="btn btn-success">
-<i class="fa fa-plus"></i>
-Tambah
-</a>
-
+            <div class="table-wrapper">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th width="60">No</th>
+                            <th>Info Kategori</th>
+                            <th width="180">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $no = 1;
+                        $query = mysqli_query($conn, "SELECT * FROM kategori ORDER BY id_kategori DESC");
+                        while($data = mysqli_fetch_assoc($query)){
+                        ?>
+                        <tr>
+                            <td class="text-center"><span class="nomor"><?= $no++; ?></span></td>
+                            <td>
+                                <div class="kategori-info">
+                                    <div class="icon-kategori"><i class="fa fa-tag"></i></div>
+                                    <div class="kategori-detail">
+                                        <span class="kategori-name"><?= htmlspecialchars($data['nama_kategori']); ?></span>
+                                        <span class="kategori-id">#<?= str_pad($data['id_kategori'], 4, '0', STR_PAD_LEFT); ?></span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-action-group">
+                                    <!-- EDIT HD -->
+                                    <a href="edit.php?id=<?= $data['id_kategori']; ?>" 
+                                       class="btn-edit-hd" 
+                                       title="Edit">
+                                        <span class="btn-edit-icon"><i class="fa fa-pen"></i></span>
+                                        <span class="btn-edit-text">Edit</span>
+                                    </a>
+                                    
+                                    <!-- HAPUS HD -->
+                                    <a href="hapus.php?id=<?= $data['id_kategori']; ?>" 
+                                       class="btn-delete-hd" 
+                                       title="Hapus"
+                                       onclick="return confirm('Yakin hapus kategori ini?')">
+                                        <span class="btn-delete-icon"><i class="fa fa-trash"></i></span>
+                                        <span class="btn-delete-text">Hapus</span>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php } ?>
+                        
+                        <?php if(mysqli_num_rows($query) == 0){ ?>
+                        <tr>
+                            <td colspan="3" class="text-center py-5">
+                                <div class="empty-state">
+                                    <i class="fa fa-tags"></i>
+                                    <p>Belum ada kategori</p>
+                                    <a href="tambah.php" class="btn-tambah-sm">Tambah Sekarang</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
-<table class="table table-bordered table-hover">
+<!-- CUSTOM STYLES + TOMBOL HD -->
+<style>
+/* ============================== BASE STYLES ============================== */
 
-<thead class="table-dark">
+.stat-card { background: #fff; border-radius: 24px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: relative; overflow: hidden; }
+.stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: linear-gradient(90deg, #8b5cf6, #c084fc); }
+.stat-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+.stat-title { color: #64748b; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-number { font-size: 2rem; font-weight: 700; color: #1e293b; margin: 5px 0; }
+.stat-subtitle { font-size: 12px; color: #94a3b8; }
+.stat-subtitle i { margin-right: 5px; }
+.icon-stat { width: 65px; height: 65px; border-radius: 20px; display: flex; align-items: center; justify-content: center; }
+.icon-purple { background: linear-gradient(135deg, #f3e8ff, #ede9fe); box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2); }
+.icon-purple i { color: #8b5cf6; }
 
-<tr>
-<th>No</th>
-<th>Nama Kategori</th>
-<th>Aksi</th>
-</tr>
+.table-card { background: #fff; border-radius: 28px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+.table-header { margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #f1f5f9; }
+.table-title { font-size: 1.5rem; font-weight: 700; color: #1e293b; }
+.table-subtitle { color: #94a3b8; font-size: 14px; }
 
-</thead>
+.search-box { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 8px 16px; border-radius: 14px; border: 2px solid transparent; transition: 0.3s; }
+.search-box:focus-within { border-color: #8b5cf6; background: #fff; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.15); }
+.search-icon i { color: #94a3b8; font-size: 14px; }
+.search-input { border: none; background: transparent; outline: none; font-size: 14px; color: #1e293b; width: 140px; }
+.search-input::placeholder { color: #94a3b8; }
 
-<tbody>
+.btn-tambah-hd { position: relative; display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; background: linear-gradient(135deg, #ba75ff 0%, #a51eff 50%, #8000ffe0 100%); color: #fff; 
+border-radius: 16px; font-weight: 600; font-size: 14px; text-decoration: none; overflow: hidden; transition: all 0.3s ease; 
+box-shadow:
+ 0 4px 15px rgb(161, 92, 213),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(154, 73, 205, 0.76);
+}
+.btn-tambah-hd:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4); color: #fff; }
+.btn-tambah-hd .btn-icon { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: rgba(255,255,255,0.2); border-radius: 8px; font-size: 12px; }
+.btn-tambah-hd .btn-shine { position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); transition: left 0.5s ease; }
+.btn-tambah-hd:hover .btn-shine { left: 100%; }
 
-<?php
+.table-wrapper { border-radius: 16px; overflow: hidden; background: #f8fafc; }
+.table-custom { width: 100%; border-collapse: separate; border-spacing: 0; }
+.table-custom thead tr { background: #f1f5f9; }
+.table-custom th { padding: 16px; font-size: 13px; font-weight: 600; color: #64748b; text-transform: uppercase; border: none; }
+.table-custom td { padding: 18px 16px; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-size: 14px; vertical-align: middle; }
+.table-custom tbody tr:hover { background: #fafafb; }
 
-$no = 1;
+.nomor { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: #f1f5f9; border-radius: 10px; font-size: 13px; font-weight: 600; color: #64748b; }
+.kategori-info { display: flex; align-items: center; gap: 12px; }
+.icon-kategori { width: 45px; height: 45px; background: linear-gradient(135deg, #f3e8ff, #ede9fe); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #8b5cf6; font-size: 18px; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15); }
+.kategori-detail { display: flex; flex-direction: column; }
+.kategori-name { font-weight: 600; color: #1e293b; }
+.kategori-id { font-size: 12px; color: #94a3b8; }
 
-while($data = mysqli_fetch_assoc($query)){
+.btn-action-group { display: flex; gap: 10px; }
 
-?>
+/* ============================== TOMBOL EDIT HD ============================== */
 
-<tr>
+.btn-edit-hd {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #b45309;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 4px 12px rgba(251, 191, 36, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+}
 
-<td><?= $no++; ?></td>
+.btn-edit-hd .btn-edit-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: rgba(180, 83, 9, 0.15);
+    border-radius: 6px;
+    font-size: 11px;
+    transition: all 0.3s ease;
+}
 
-<td><?= $data['nama_kategori']; ?></td>
+.btn-edit-hd:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 8px 20px rgba(251, 191, 36, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #fff;
+}
 
-<td>
+.btn-edit-hd:hover .btn-edit-icon {
+    background: rgba(255, 255, 255, 0.3);
+}
 
-<a href="edit.php?id=<?= $data['id_kategori']; ?>"
-class="btn btn-warning btn-sm">
-Edit
-</a>
+.btn-edit-hd:active {
+    transform: translateY(0);
+}
 
-<a href="hapus.php?id=<?= $data['id_kategori']; ?>"
-class="btn btn-danger btn-sm"
-onclick="return confirm('Hapus data?')">
-Hapus
-</a>
+/* ============================== TOMBOL HAPUS HD ============================== */
 
-</td>
+.btn-delete-hd {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #dc2626;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 4px 12px rgba(239, 68, 68, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
 
-</tr>
+.btn-delete-hd .btn-delete-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: rgba(220, 38, 38, 0.15);
+    border-radius: 6px;
+    font-size: 11px;
+    transition: all 0.3s ease;
+}
 
-<?php } ?>
+.btn-delete-hd:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 8px 20px rgba(239, 68, 68, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #fff;
+}
 
-</tbody>
+.btn-delete-hd:hover .btn-delete-icon {
+    background: rgba(255, 255, 255, 0.3);
+}
 
-</table>
+.btn-delete-hd:active {
+    transform: translateY(0);
+}
 
-</div>
+/* Empty State */
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; color: #94a3b8; }
+.empty-state i { font-size: 3rem; margin-bottom: 15px; opacity: 0.5; }
+.btn-tambah-sm { display: inline-flex; align-items: center; gap: 8px; background: #f1f5f9; color: #475569; padding: 10px 18px; border-radius: 12px; font-weight: 600; font-size: 14px; text-decoration: none; }
+.btn-tambah-sm:hover { background: #8b5cf6; color: #fff; }
 
-</div>
-</div>
+/* ============================== DARK MODE ============================== */
+
+body.dark-mode .main-content { background: #0f172a; }
+body.dark-mode .stat-card { background: #1e293b; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+body.dark-mode .stat-number { color: #f1f5f9; }
+body.dark-mode .stat-title { color: #94a3b8; }
+
+body.dark-mode .table-card { background: #1e293b; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+body.dark-mode .table-title { color: #f1f5f9; }
+body.dark-mode .search-box { background: #334155; }
+body.dark-mode .search-input { color: #e2e8f0; }
+
+body.dark-mode .table-wrapper { background: #334155; }
+body.dark-mode .table-custom thead tr { background: #475569; }
+body.dark-mode .table-custom th { color: #cbd5e1; }
+body.dark-mode .table-custom td { color: #e2e8f0; border-color: #475569; }
+body.dark-mode .table-custom tbody tr:hover { background: #475569; }
+
+body.dark-mode .nomor { background: #475569; color: #cbd5e1; }
+body.dark-mode .icon-kategori { background: linear-gradient(135deg, #4c1d95, #7c3aed); color: #e9d5
+ff); color: #e9d5ff; }
+body.dark-mode .kategori-name { color: #f1f5f9; }
+
+body.dark-mode .btn-edit-hd {
+    background: linear-gradient(135deg, #451a03 0%, #78350f 100%);
+    color: #fcd34d;
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.15);
+}
+
+body.dark-mode .btn-edit-hd:hover {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #fff;
+}
+
+body.dark-mode .btn-delete-hd {
+    background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%);
+    color: #fca5a5;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+}
+
+body.dark-mode .btn-delete-hd:hover {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #fff;
+}
+
+body.dark-mode .empty-state { color: #64748b; }
+body.dark-mode .btn-tambah-sm { background: #475569; color: #cbd5e1; }
+body.dark-mode .btn-tambah-sm:hover { background: #8b5cf6; color: #fff; }
+
+/* Responsive */
+@media(max-width: 768px){
+    .main-content { margin-left: 0; width: 100%; padding: 90px 15px 15px; }
+    .table-card { padding: 20px; }
+    .btn-tambah-hd { padding: 10px 16px; }
+    .btn-tambah-hd .btn-text { display: none; }
+    .btn-edit-text, .btn-delete-text { display: none; }
+    .btn-edit-hd, .btn-delete-hd { padding: 10px 12px; }
+}
+</style>
 
 <?php include '../../includes/footer.php'; ?>
